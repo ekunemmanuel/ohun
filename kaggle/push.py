@@ -3,6 +3,7 @@
     uv run python kaggle/push.py code             # upload src/ohun as private dataset "ohun-code"
     uv run python kaggle/push.py run baselines    # start kaggle/baselines/run.py on a T4 x2
     uv run python kaggle/push.py run train-stt
+    uv run python kaggle/push.py run dedupe       # CPU only: de-duplicated WaZoBia test ids
     uv run python kaggle/push.py run train-stt --no-run   # create the notebook only (e.g. to add secrets)
     uv run python kaggle/push.py status train-stt
     uv run python kaggle/push.py fetch train-stt  # outputs -> runs/kaggle/train-stt
@@ -19,6 +20,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
 BUILD = HERE / "build"  # gitignored
+CPU_ONLY = {"dedupe"}  # text-only jobs: no GPU quota used
 KAGGLE = ["uvx", "-q", "--with", "six", "kaggle"]
 
 
@@ -67,16 +69,16 @@ def push_run(user: str, name: str, start: bool = True) -> None:
         "language": "python",
         "kernel_type": "script",
         "is_private": True,
-        "enable_gpu": True,
+        "enable_gpu": name not in CPU_ONLY,
         "enable_internet": True,
-        "machine_shape": "NvidiaTeslaT4",
         "dataset_sources": [f"{user}/ohun-code"],
         "competition_sources": [],
         "kernel_sources": [],
         "model_sources": [],
     }
     (out / "kernel-metadata.json").write_text(json.dumps(meta, indent=2))
-    kaggle("kernels", "push", "-p", str(out), "--accelerator", "NvidiaTeslaT4", *([] if start else ["--no-run"]))
+    gpu = [] if name in CPU_ONLY else ["--accelerator", "NvidiaTeslaT4"]
+    kaggle("kernels", "push", "-p", str(out), *gpu, *([] if start else ["--no-run"]))
     print(f"Watch it at https://www.kaggle.com/code/{user}/ohun-{name}")
 
 
@@ -84,7 +86,7 @@ def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--user", help="Kaggle username (default: the logged-in account)")
     p.add_argument("action", choices=["code", "run", "status", "fetch"])
-    p.add_argument("name", nargs="?", choices=["baselines", "train-stt"])
+    p.add_argument("name", nargs="?", choices=["baselines", "train-stt", "dedupe"])
     p.add_argument("--no-run", action="store_true", help="create/update the notebook without running it")
     a = p.parse_args()
     a.user = a.user or logged_in_user()
@@ -92,7 +94,7 @@ def main() -> None:
         push_code(a.user)
         return
     if not a.name:
-        p.error(f"{a.action} needs a run name: baselines or train-stt")
+        p.error(f"{a.action} needs a run name: baselines, train-stt or dedupe")
     if a.action == "run":
         push_run(a.user, a.name, start=not a.no_run)
     elif a.action == "status":
