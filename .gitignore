@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv
+
+# Never commit audio, datasets, checkpoints or keys
+data/raw/
+data/processed/
+runs/
+checkpoints/
+*.wav
+*.flac
+*.mp3
+*.safetensors
+*.bin
+*.pt
+.env
+kaggle/build/

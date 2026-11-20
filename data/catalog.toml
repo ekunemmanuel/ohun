@@ -1,0 +1,160 @@
+# Every dataset and model Ohùn knows about, with its license.
+#
+# commercial = true   usable in the Ohùn model we may one day sell or serve
+# commercial = false  research, comparison and evaluation only; never in the main training mix
+#
+# Licenses and gating were checked on Hugging Face / OpenSLR on 2026-11-19. Re-check
+# before training: dataset owners change terms. Gated sets need a Hugging Face login and
+# accepting the terms on the dataset page.
+
+# ---------------------------------------------------------------- datasets
+
+[[dataset]]
+id = "wazobiaspeech"
+name = "WaZoBiaSpeech"
+source = "hf:Africanvoice/naija_african_voices"
+langs = ["pcm"]  # the citation mentions Hausa, Igbo, Yoruba, but this release is Pidgin only (checked 2026-11-19)
+tasks = ["stt"]
+hours = { pcm = 1017 }  # 390,767 clips, 1,119 speakers, 48 kHz, speaker-disjoint train/dev/dev_test
+license = "CC-BY-4.0"
+commercial = true
+gated = true
+role = "Main Pidgin speech to text training set. Its card FORBIDS text to speech / voice cloning use."
+
+[[dataset]]
+id = "pidgin-1.0"
+name = "Nigerian Pidgin ASR 1.0"
+source = "hf:asr-nigerian-pidgin/nigerian-pidgin-1.0"
+langs = ["pcm"]
+tasks = ["stt", "tts"]
+utterances = 4288
+speakers = 10
+license = "CC-BY-4.0"
+commercial = true
+gated = false
+role = "Pidgin eval set (has a test split, not gated) and small TTS set. Paper: arXiv 2010.11123."
+
+[[dataset]]
+id = "bibletts-yor"
+name = "BibleTTS (Yoruba)"
+source = "https://www.openslr.org/129/"
+langs = ["yor"]
+tasks = ["tts"]
+hours = { yor = 33.3 }  # aligned; 93.6 h more unaligned
+speakers = 1
+license = "CC-BY-SA-4.0"
+commercial = true  # share-alike: what we derive from it must carry the same license
+gated = false
+role = "Main Yoruba text to speech set: one speaker, studio quality, fully toned text."
+
+[[dataset]]
+id = "fleurs-yor"
+name = "FLEURS (Yoruba)"
+source = "hf:google/fleurs#yo_ng"
+langs = ["yor"]
+tasks = ["stt"]
+license = "CC-BY-4.0"
+commercial = true
+gated = false
+role = "Yoruba eval benchmark everyone reports on, so our numbers compare with published ones."
+
+[[dataset]]
+id = "naijavoices"
+name = "NaijaVoices"
+source = "hf:naijavoices/naijavoices-dataset"
+langs = ["yor", "ibo", "hau"]
+tasks = ["stt"]
+hours = { yor = 600, ibo = 600, hau = 600 }  # approximate, per the dataset card
+speakers = 5455
+license = "CC-BY-NC-SA-4.0"
+commercial = false
+gated = true
+role = "Biggest Yoruba set, but non-commercial. Research runs and evaluation only."
+
+[[dataset]]
+id = "pidginmed"
+name = "PidginMed-ASR10K"
+source = "hf:AnnonSubmit/PidginMed-ASR10K"
+langs = ["pcm"]
+tasks = ["stt"]
+utterances = 10218
+speakers = 21
+license = "CC-BY-NC-4.0"
+commercial = false
+gated = false
+role = "Medical-domain Pidgin eval: tests vocabulary outside everyday speech."
+
+# ---------------------------------------------------------------- models
+
+[[model]]
+id = "whisper-turbo"
+source = "hf:openai/whisper-large-v3-turbo"
+tasks = ["stt"]
+license = "MIT"
+commercial = true
+role = "Main speech to text base to fine-tune. Too heavy to train on the Mac."
+
+[[model]]
+id = "whisper-small"
+source = "hf:openai/whisper-small"
+tasks = ["stt"]
+license = "Apache-2.0"
+commercial = true
+role = "Small speech to text base: fast experiments, runs on the Mac."
+
+[[model]]
+id = "chatterbox"
+source = "hf:ResembleAI/chatterbox"
+tasks = ["tts"]
+license = "MIT"
+commercial = true
+role = "Text to speech base candidate. Someone already fine-tuned it for Pidgin (see below)."
+
+[[model]]
+id = "kokoro"
+source = "hf:hexgrad/Kokoro-82M"
+tasks = ["tts"]
+license = "Apache-2.0"
+commercial = true
+role = "Small, fast text to speech candidate (the voice ReadOut uses)."
+
+[[model]]
+id = "mms-asr"
+source = "hf:facebook/mms-1b-all"
+tasks = ["stt"]
+license = "CC-BY-NC-4.0"
+commercial = false
+role = "Baseline to beat for Yoruba and Pidgin speech to text."
+
+[[model]]
+id = "mms-tts-yor"
+source = "hf:facebook/mms-tts-yor"
+tasks = ["tts"]
+license = "CC-BY-NC-4.0"
+commercial = false
+role = "Baseline to beat for Yoruba text to speech."
+
+[[model]]
+id = "mms-tts-pcm"
+source = "hf:facebook/mms-tts-pcm"
+tasks = ["tts"]
+license = "CC-BY-NC-4.0"
+commercial = false
+role = "Baseline to beat for Pidgin text to speech."
+
+[[model]]
+id = "ncair-yoruba-asr"
+source = "hf:NCAIR1/Yoruba-ASR"
+tasks = ["stt"]
+license = "other"
+commercial = false  # custom license, unread; treat as comparison only until checked
+gated = true
+role = "Nigeria's national (N-ATLaS) Yoruba speech to text model. Baseline to beat."
+
+[[model]]
+id = "chatterbox-pcm"
+source = "hf:samuelolubukun/chatterbox-nigerian-pidgin"
+tasks = ["tts"]
+license = "CC-BY-NC-SA-4.0"
+commercial = false
+role = "Existing Pidgin text to speech fine-tune. Baseline to beat."
